@@ -1,0 +1,857 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>For Priyal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one screen at a time over a living sky that moves from afternoon to night as she answers. */
+:root{
+  --ink:#35182B;        /* plum ink */
+  --ink-soft:#7A5468;
+  --rose:#E0558A;       /* rosé */
+  --raspberry:#AE2A5D;
+  --champagne:#E6BE76;  /* foil gold */
+  --paper:#FFF9F5;
+  --moon:#FFF3E8;       /* text on night sky */
+  --night:#15123A;
+  --f-display:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Caveat','Bradley Hand','Comic Sans MS',cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--ink);font-family:var(--f-body);overflow:hidden}
+
+/* ---------- SKY ---------- */
+#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+#sky .l{position:absolute;inset:0;opacity:0;transition:opacity 1.8s ease}
+.l-day{background:linear-gradient(180deg,#FFEBDD 0%,#FFDCD3 55%,#F9CAD6 100%)}
+.l-gold{background:linear-gradient(180deg,#FFD9AE 0%,#FFB9A4 50%,#EE9DB8 100%)}
+.l-dusk{background:linear-gradient(180deg,#5E4E92 0%,#B37BB5 48%,#F4A2AE 100%)}
+.l-night{background:radial-gradient(120% 70% at 50% 110%,#5B3A7C 0%,rgba(91,58,124,0) 60%),linear-gradient(180deg,#0F0D2E 0%,#1E1950 55%,#33265F 100%)}
+body[data-sky=day] .l-day,body[data-sky=gold] .l-gold,body[data-sky=dusk] .l-dusk,body[data-sky=night] .l-night{opacity:1}
+#stars{position:absolute;inset:0;opacity:0;transition:opacity 2s ease}
+body[data-sky=dusk] #stars{opacity:.45}
+body[data-sky=night] #stars{opacity:1}
+.twinkle{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+#sun{position:absolute;width:180px;height:180px;border-radius:50%;left:50%;margin-left:-90px;top:62%;
+  background:radial-gradient(circle,#FFF4D6 0%,#FFD7A0 45%,rgba(255,200,150,0) 70%);transition:top 2.2s ease,opacity 2s ease;opacity:.9}
+body[data-sky=gold] #sun{top:70%}
+body[data-sky=dusk] #sun{top:96%;opacity:.5}
+body[data-sky=night] #sun{top:110%;opacity:0}
+.petal{position:absolute;bottom:-40px;opacity:0;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.55}90%{opacity:.3}100%{transform:translateY(-115vh) rotate(260deg);opacity:0}}
+canvas#fx{position:fixed;inset:0;z-index:30;pointer-events:none}
+
+/* ---------- SCREENS ---------- */
+.screen{position:fixed;inset:0;z-index:2;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;
+  padding-block:calc(70px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  opacity:0;visibility:hidden;transform:translateY(18px);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.9,.3,1.15),visibility 0s .6s}
+.screen.active{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.9,.3,1.15),visibility 0s}
+.screen>*{margin-block:auto}
+
+.card{position:relative;width:min(560px,100%);background:rgba(255,249,245,.9);border:1px solid rgba(255,255,255,.8);
+  border-radius:28px;padding:34px 26px 30px;box-shadow:0 30px 60px -30px rgba(53,24,43,.55),0 2px 0 rgba(255,255,255,.6) inset;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);margin:0 0 10px}
+h1,h2{font-family:var(--f-display);font-weight:400;margin:0;line-height:1.02;text-wrap:balance;color:var(--ink)}
+h1{font-size:clamp(3rem,13vw,4.6rem)}
+h2{font-size:clamp(2rem,8vw,2.8rem)}
+h1 em,h2 em{color:var(--raspberry)}
+p{font-size:1.04rem;line-height:1.6;color:var(--ink-soft);margin:14px 0 0}
+.hand{font-family:var(--f-hand);font-weight:700}
+.btn{font-family:var(--f-body);font-weight:700;font-size:1.02rem;padding:15px 28px;border-radius:999px;border:0;cursor:pointer;
+  background:linear-gradient(160deg,var(--rose),var(--raspberry));color:#fff;box-shadow:0 14px 28px -12px rgba(174,42,93,.8);
+  transition:transform .22s cubic-bezier(.2,.9,.3,1.6),box-shadow .22s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-2px) scale(1.03)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--raspberry);border:2px solid rgba(174,42,93,.3);box-shadow:none}
+.btn.light{background:rgba(255,243,232,.12);color:var(--moon);border:1.5px solid rgba(255,243,232,.4);box-shadow:none}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:3px solid var(--champagne);outline-offset:3px}
+.foot{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:26px}
+.reply{min-height:2.2em;margin-top:14px;text-align:center;font-family:var(--f-hand);font-size:1.5rem;line-height:1.1;color:var(--raspberry);opacity:0;transform:translateY(6px);transition:.35s}
+.reply.show{opacity:1;transform:none}
+
+/* progress */
+.prog{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.prog .dots{display:flex;gap:6px}
+.prog .dots i{width:22px;height:5px;border-radius:9px;background:rgba(174,42,93,.15)}
+.prog .dots i.on{background:var(--rose)}
+.prog span{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+
+/* ---------- ENVELOPE ---------- */
+.cover{text-align:center;display:flex;flex-direction:column;align-items:center}
+.cover .kicker{font-family:var(--f-hand);font-size:1.6rem;color:var(--raspberry)}
+.env{width:min(330px,82vw);cursor:pointer;margin-top:18px;filter:drop-shadow(0 26px 30px rgba(174,42,93,.3));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+.env .flap{transform-box:fill-box;transform-origin:50% 0;transition:transform .7s cubic-bezier(.6,-.3,.3,1.4)}
+.env.open{animation:none}
+.env.open .flap{transform:scaleY(-1)}
+.env .seal{transform-box:fill-box;transform-origin:50% 50%;transition:transform .5s cubic-bezier(.3,-.6,.4,1.6),opacity .5s}
+.env.open .seal{transform:scale(0) rotate(160deg);opacity:0}
+.tap{margin-top:22px;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);animation:blink 2s ease-in-out infinite}
+.tap b{color:var(--raspberry)}
+@keyframes blink{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* postmark */
+.postmark{position:absolute;top:18px;right:18px;width:78px;height:78px;border-radius:50%;border:2px dashed rgba(174,42,93,.45);
+  display:grid;place-items:center;text-align:center;transform:rotate(12deg);color:var(--raspberry);font-size:.56rem;letter-spacing:.14em;font-weight:700;line-height:1.35;text-transform:uppercase}
+.postmark b{display:block;font-family:var(--f-display);font-size:1.5rem;letter-spacing:0;font-weight:400;line-height:1}
+.intro h1{padding-right:70px}
+.sign{margin-top:20px;font-family:var(--f-hand);font-size:1.6rem;color:var(--ink)}
+
+/* ---------- Q1 slider ---------- */
+.dial{text-align:center;margin-top:20px}
+.dial .num{font-family:var(--f-display);font-size:6rem;line-height:1;color:var(--raspberry);display:inline-block;transition:transform .3s cubic-bezier(.2,.9,.3,1.7)}
+.dial .num.pop{transform:scale(1.18) rotate(-4deg)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;margin:18px 0 0;background:transparent;height:40px}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:99px;background:linear-gradient(90deg,#FFE0E8,var(--rose))}
+input[type=range]::-moz-range-track{height:12px;border-radius:99px;background:linear-gradient(90deg,#FFE0E8,var(--rose))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;margin-top:-11px;border-radius:50%;background:#fff;border:3px solid var(--raspberry);box-shadow:0 6px 16px -4px rgba(174,42,93,.6);cursor:grab}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid var(--raspberry);cursor:grab}
+.ends{display:flex;justify-content:space-between;font-size:.78rem;font-weight:600;color:var(--ink-soft)}
+.shake{animation:shake .42s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+
+/* ---------- options ---------- */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.opt{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:#fff;border:2px solid rgba(174,42,93,.12);
+  border-radius:20px;padding:16px 14px;cursor:pointer;font-family:inherit;font-size:.98rem;font-weight:600;color:var(--ink);min-width:0;
+  transition:transform .22s cubic-bezier(.2,.9,.3,1.6),border-color .2s,background .2s,box-shadow .2s}
+.opt small{font-weight:500;color:var(--ink-soft);font-size:.8rem;line-height:1.35}
+.opt:hover{transform:translateY(-3px) rotate(-.6deg)}
+.opt.sel{border-color:var(--rose);background:linear-gradient(160deg,#fff,#FFE6EE);box-shadow:0 16px 30px -18px rgba(174,42,93,.7)}
+.opt.nope{opacity:.45;filter:grayscale(.7)}
+.opt .ic{width:38px;height:38px;color:var(--raspberry)}
+.opt .ic svg{width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
+.chip{font-family:inherit;font-weight:700;font-size:1rem;padding:13px 20px;border-radius:999px;background:#fff;border:2px solid rgba(174,42,93,.15);color:var(--ink);cursor:pointer;
+  transition:transform .2s cubic-bezier(.2,.9,.3,1.6),background .2s,border-color .2s,opacity .3s}
+.chip:hover{transform:translateY(-3px)}
+.chip.sel{background:var(--rose);border-color:var(--raspberry);color:#fff}
+.chip.banned{text-decoration:line-through;opacity:.4;pointer-events:none}
+.stack{display:grid;gap:10px;margin-top:22px}
+.stack .opt{flex-direction:row;align-items:center}
+.swatch{width:26px;height:26px;border-radius:50%;flex:0 0 26px;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(174,42,93,.25)}
+
+/* ---------- big question ---------- */
+.big-q{text-align:center}
+.showdown{display:flex;gap:22px;align-items:center;justify-content:center;margin-top:34px;min-height:120px;flex-wrap:wrap}
+#yes{padding:18px 40px;font-size:1.15rem;transition:transform .38s cubic-bezier(.2,.9,.3,1.6);position:relative;z-index:3}
+#yes.glow{animation:thump 1.1s ease-in-out infinite}
+@keyframes thump{0%,100%{box-shadow:0 0 0 0 rgba(224,85,138,.45),0 14px 28px -12px rgba(174,42,93,.8)}50%{box-shadow:0 0 0 16px rgba(224,85,138,0),0 14px 28px -12px rgba(174,42,93,.8)}}
+.no-slot{width:140px;height:56px;position:relative}
+#no{position:absolute;inset:0;width:100%;height:100%;justify-content:center;white-space:nowrap;background:#fff;color:var(--ink-soft);border:2px solid rgba(122,84,104,.25);box-shadow:none;
+  transition:left .55s cubic-bezier(.34,1.3,.5,1),top .55s cubic-bezier(.34,1.3,.5,1),transform .3s,background .4s,color .4s}
+#no.loose{position:fixed;inset:auto;z-index:40}
+.whisper{min-height:1.6em;margin-top:22px;font-family:var(--f-hand);font-size:1.45rem;color:var(--raspberry);opacity:0;transition:.3s}
+.whisper.show{opacity:1}
+.count{margin-top:8px;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);opacity:0;transition:.3s}
+.count.show{opacity:.7}
+
+/* ---------- loader ---------- */
+.loadwrap{width:min(520px,100%);text-align:center;color:var(--moon)}
+.moon{width:92px;height:92px;margin:0 auto 26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFF8EC,#F4D9A8 60%,#D9B477);
+  box-shadow:0 0 50px 10px rgba(244,217,168,.35);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08);box-shadow:0 0 70px 18px rgba(244,217,168,.45)}}
+.status{font-family:var(--f-display);font-style:italic;font-size:clamp(1.5rem,6vw,2rem);min-height:2.4em;line-height:1.15}
+.bar{height:8px;border-radius:99px;background:rgba(255,243,232,.15);overflow:hidden;margin-top:24px}
+.bar span{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--champagne),var(--rose));transition:width .35s ease}
+.pct{margin-top:10px;font-size:.8rem;letter-spacing:.2em;font-weight:700;opacity:.7;font-variant-numeric:tabular-nums}
+
+/* ---------- the plan ---------- */
+.plan{width:min(600px,100%);color:var(--moon)}
+.plan-head{text-align:center;margin-bottom:28px}
+.plan-head .eyebrow{color:var(--champagne)}
+.plan-head h2{color:var(--moon);font-size:clamp(2.6rem,11vw,4rem)}
+.plan-head h2 em{color:#FFB3CB}
+.plan-head p{color:rgba(255,243,232,.75)}
+.tl{position:relative;display:grid;gap:16px}
+.tl::before{content:"";position:absolute;left:23px;top:20px;bottom:20px;border-left:2px dotted rgba(230,190,118,.55)}
+.stop{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:start;opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .7s cubic-bezier(.2,.9,.3,1.2)}
+.stop.in{opacity:1;transform:none}
+.badge{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#241D57;border:2px solid var(--champagne);color:var(--champagne);position:relative;z-index:1}
+.badge svg{width:24px;height:24px}
+.ticket{min-width:0;background:var(--paper);color:var(--ink);border-radius:18px;padding:16px 18px 16px 20px;
+  -webkit-mask:radial-gradient(circle 8px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 8px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat;
+          mask:radial-gradient(circle 8px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 8px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat}
+.ticket .when{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--raspberry)}
+.ticket h3{font-family:var(--f-display);font-weight:400;font-size:1.65rem;line-height:1.05;margin:4px 0 0}
+.ticket p{font-size:.95rem;margin-top:6px}
+.ticket .mini{margin-top:12px;padding:9px 16px;font-size:.88rem}
+.ticket a.link{color:var(--raspberry);font-weight:700;font-size:.88rem}
+.stop.star .ticket{background:linear-gradient(160deg,#FFF9F5,#FFE3EC)}
+.stop.star .badge{background:var(--champagne);color:#241D57}
+.flame{display:inline-block;width:10px;height:16px;border-radius:50% 50% 40% 40%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#FFF1B8,#FFB347 55%,#F06A3B);
+  vertical-align:-2px;margin-right:6px;animation:flick .18s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes flick{to{transform:scaleY(1.15) skewX(4deg);opacity:.85}}
+.inf{animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plan-foot{text-align:center;margin-top:30px}
+
+/* ---------- finale ---------- */
+.finale{text-align:center;color:var(--moon);width:min(560px,100%)}
+.finale .big{font-family:var(--f-display);font-style:italic;font-size:clamp(3.6rem,17vw,6.4rem);line-height:.92;color:var(--moon)}
+.finale .big span{color:#FFB3CB}
+.slip{margin:26px auto 0;max-width:420px;background:var(--paper);color:var(--ink);border-radius:20px;padding:20px 22px;text-align:left}
+.slip div{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1.5px dashed rgba(174,42,93,.2)}
+.slip div:last-child{border-bottom:0}
+.slip b{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);flex:0 0 auto;padding-top:5px}
+.slip span{font-family:var(--f-hand);font-size:1.45rem;color:var(--raspberry);text-align:right;line-height:1.1;min-width:0}
+.finale .sig{margin-top:24px;font-family:var(--f-hand);font-size:1.8rem}
+.finale .fine{font-size:.78rem;color:rgba(255,243,232,.55);margin-top:22px}
+
+/* sound toggle */
+#mute{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));z-index:50;
+  height:40px;padding:0 14px;border-radius:999px;border:1.5px solid rgba(174,42,93,.25);background:rgba(255,249,245,.75);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--raspberry);font:700 .74rem var(--f-body);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:none;align-items:center;gap:8px}
+#mute.show{display:inline-flex}
+#mute .eq{display:flex;gap:2px;align-items:flex-end;height:12px}
+#mute .eq i{width:3px;background:currentColor;border-radius:2px;animation:eq .9s ease-in-out infinite}
+#mute .eq i:nth-child(2){animation-delay:.2s}#mute .eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
+#mute.off .eq i{animation:none;height:3px}
+
+@media (max-width:420px){
+  .card{padding:30px 18px 26px;border-radius:24px}
+  .opts{gap:10px}
+  .opt{padding:14px 12px}
+  #yes{padding:16px 32px}
+  .postmark{width:66px;height:66px;top:14px;right:14px}
+  .intro h1{padding-right:56px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.1s!important}
+  .petal{display:none}
+}
+</style>
+
+<div id="sky" aria-hidden="true">
+  <div class="l l-day"></div><div class="l l-gold"></div><div class="l l-dusk"></div><div class="l l-night"></div>
+  <div id="sun"></div>
+  <div id="stars"></div>
+</div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<button id="mute" aria-label="Toggle music"><span class="eq"><i></i><i></i><i></i></span><span id="muteTxt">music on</span></button>
+
+<!-- COVER -->
+<section class="screen active" id="s-cover" data-sky="day">
+  <div class="cover">
+    <div class="kicker">a little something, hand delivered</div>
+    <svg class="env" id="env" viewBox="0 0 240 172" role="button" tabindex="0" aria-label="Open the envelope">
+      <rect x="12" y="34" width="216" height="126" rx="12" fill="#FFF3E6" stroke="#AE2A5D" stroke-width="3"/>
+      <path d="M16 154 L108 98 M224 154 L132 98" stroke="#AE2A5D" stroke-width="2.5" stroke-linecap="round" opacity=".35" fill="none"/>
+      <text x="120" y="142" text-anchor="middle" font-family="Caveat, cursive" font-size="22" font-weight="700" fill="#AE2A5D">for Priyal</text>
+      <path class="flap" d="M12 44 L120 116 L228 44 L228 40 Q228 30 218 30 L22 30 Q12 30 12 40 Z" fill="#F9D5DF" stroke="#AE2A5D" stroke-width="3" stroke-linejoin="round"/>
+      <g class="seal" transform="translate(120,76)">
+        <circle r="23" fill="#AE2A5D"/><circle r="17" fill="none" stroke="#E6BE76" stroke-width="1.5" stroke-dasharray="2 3"/>
+        <text y="9" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-style="italic" font-size="26" fill="#FFE9D2">P</text>
+      </g>
+    </svg>
+    <div class="tap">tap the <b>seal</b> &middot; sound on</div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="screen" id="s-intro" data-sky="day">
+  <div class="card intro">
+    <div class="postmark"><div>Sat<b>31</b>Oct &middot; BKC</div></div>
+    <p class="eyebrow">one month of texts later</p>
+    <h1>Hi <em>Priyal.</em></h1>
+    <p>A month of good mornings, voice notes I replay more than I'll admit, and dessert runs that were never really about dessert.</p>
+    <p>So I made you a tiny website. A few questions first. There are no wrong answers. Some are just more correct than others.</p>
+    <div class="sign">&mdash; Jay</div>
+    <div class="foot"><button class="btn" data-go="s-q1">Okay, I'm listening</button></div>
+  </div>
+</section>
+
+<!-- Q1 -->
+<section class="screen" id="s-q1" data-sky="day">
+  <div class="card">
+    <div class="prog" data-step="1"></div>
+    <h2>How excited are you for <em>Saturday?</em></h2>
+    <div class="dial">
+      <span class="num" id="dialNum">7</span>
+      <div id="rangewrap">
+        <input type="range" id="rating" min="1" max="11" value="7" aria-label="How excited you are">
+        <div class="ends"><span>meh</span><span>can't sleep</span></div>
+      </div>
+      <div class="reply" id="ratingNag"></div>
+    </div>
+    <div class="foot"><button class="btn" data-go="s-q2">Locked in</button></div>
+  </div>
+</section>
+
+<!-- Q2 -->
+<section class="screen" id="s-q2" data-sky="gold">
+  <div class="card">
+    <div class="prog" data-step="2"></div>
+    <h2>Saturday afternoon, you're in the mood for&hellip;</h2>
+    <div class="opts" id="mood">
+      <button class="opt" data-m="coffee" data-r="cold coffee. obviously. the coffee test continues.">
+        <span class="ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 14h22l-3 28H16L13 14Z"/><path d="M11 14h26"/><path d="M27 14l4-9"/><path d="M15 24h18"/><circle cx="21" cy="31" r="1.4" fill="currentColor"/><circle cx="26" cy="35" r="1.4" fill="currentColor"/></svg></span>
+        Good coffee<small>cold, the only kind</small></button>
+      <button class="opt" data-m="sweets" data-r="something cute and sweet. like you. (sorry. not sorry.)">
+        <span class="ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19c0-6 7-10 16-10s16 4 16 10H8Z"/><path d="M7 24h34"/><path d="M8 29h32c0 6-7 10-16 10S8 35 8 29Z"/></svg></span>
+        Cute sweets<small>macarons, pastel boxes</small></button>
+      <button class="opt" data-m="both" data-r="both. a woman of taste. I respect it.">
+        <span class="ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 40C12 32 6 25 6 17a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 8-6 15-18 23Z"/></svg></span>
+        Both<small>why should I choose</small></button>
+      <button class="opt" data-m="tea" data-r="you've never had tea in your life. nice try 😌">
+        <span class="ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20h26v8a12 12 0 0 1-12 12h-2A12 12 0 0 1 9 28v-8Z"/><path d="M35 23h3a5 5 0 0 1 0 10h-4"/><path d="M17 8c-2 2-2 4 0 7M25 8c-2 2-2 4 0 7"/></svg></span>
+        Chai<small>for a change?</small></button>
+    </div>
+    <div class="reply" id="moodReply"></div>
+    <div class="foot"><button class="btn" id="q2next">Next</button></div>
+  </div>
+</section>
+
+<!-- Q3 -->
+<section class="screen" id="s-q3" data-sky="gold">
+  <div class="card">
+    <div class="prog" data-step="3"></div>
+    <h2>What do I get to call you on Saturday?</h2>
+    <div class="chips" id="names">
+      <button class="chip" data-n="Cutie" data-r="cutie it is. I was going to anyway.">Cutie</button>
+      <button class="chip" data-n="Sweetheart" data-r="sweetheart. my voice will crack. ignore it.">Sweetheart</button>
+      <button class="chip" data-n="Buddy" data-r="buddy?? okay, but only ironically.">Buddy</button>
+      <button class="chip" data-n="Bhai" data-r="bhai is banned for the entire evening 😭">Bhai</button>
+      <button class="chip" data-n="Priyal" data-r="classic. it's a pretty name, I'll say it a lot.">Just Priyal</button>
+    </div>
+    <div class="reply" id="nameReply"></div>
+    <div class="foot"><button class="btn" id="q3next">Continue</button></div>
+  </div>
+</section>
+
+<!-- Q4 -->
+<section class="screen" id="s-q4" data-sky="dusk">
+  <div class="card">
+    <div class="prog" data-step="4"></div>
+    <h2>Dress code check.</h2>
+    <p>Someone mentioned they rarely wear pink. Someone else mentioned it's his favourite colour.</p>
+    <div class="stack" id="dress">
+      <button class="opt" data-d="Pink, for you" data-r="my favourite colour. I'll pretend to be calm."><span class="swatch" style="background:#F59AB8"></span>Pink. For you, this once.</button>
+      <button class="opt" data-d="Anything but pink" data-r="noted. you'll still be the prettiest person at NMACC."><span class="swatch" style="background:#2C2A3A"></span>Anything but pink 😌</button>
+      <button class="opt" data-d="A surprise" data-r="a surprise. dangerous. I like it."><span class="swatch" style="background:conic-gradient(#F59AB8,#E6BE76,#9BB7E8,#F59AB8)"></span>Surprise me</button>
+    </div>
+    <div class="reply" id="dressReply"></div>
+    <div class="foot"><button class="btn" id="q4next">Last one, I promise</button></div>
+  </div>
+</section>
+
+<!-- BIG QUESTION -->
+<section class="screen" id="s-q5" data-sky="dusk">
+  <div class="card big-q">
+    <div class="prog" data-step="5"></div>
+    <h2>Priyal, will you spend this <em>Saturday evening</em> with me?</h2>
+    <p>31st October. I've planned the whole thing. You just have to be there.</p>
+    <div class="showdown">
+      <button class="btn" id="yes">Yes</button>
+      <div class="no-slot"><button class="btn ghost" id="no">No</button></div>
+    </div>
+    <div class="whisper" id="whisper"></div>
+    <div class="count" id="count"></div>
+  </div>
+</section>
+
+<!-- LOADING -->
+<section class="screen" id="s-load" data-sky="night">
+  <div class="loadwrap">
+    <div class="moon"></div>
+    <div class="status" id="status">Planning the evening&hellip;</div>
+    <div class="bar"><span id="barfill"></span></div>
+    <div class="pct" id="pct">0%</div>
+  </div>
+</section>
+
+<!-- THE PLAN -->
+<section class="screen" id="s-plan" data-sky="night">
+  <div class="plan">
+    <div class="plan-head">
+      <p class="eyebrow">Saturday &middot; 31 October</p>
+      <h2>The <em>plan.</em></h2>
+      <p>Classified until now. Tap the fountain.</p>
+    </div>
+    <div class="tl" id="tl">
+      <div class="stop"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16h14l-1.5-5.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5L5 16Z"/><path d="M4 16v3h2v-1.5h12V19h2v-3"/><circle cx="8" cy="16" r=".6" fill="currentColor"/><circle cx="16" cy="16" r=".6" fill="currentColor"/></svg></div>
+        <div class="ticket"><div class="when" id="pickWhen">Pickup</div><h3>I come get you</h3><p>Door to door. Just be ready, and as cute as usual. Low bar for you.</p></div></div>
+
+      <div class="stop"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10l-1.4 12H8.4L7 8Z"/><path d="M6 8h12"/><path d="M13 8l2-4"/></svg></div>
+        <div class="ticket"><div class="when">Golden hour &middot; NMACC</div><h3 id="cafeTitle">EL&amp;N London or Ladurée</h3><p id="cafeText">Depending on your mood.</p></div></div>
+
+      <div class="stop"><div class="badge"><svg class="inf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 12c-2-3-4-4.5-6-4.5a4.5 4.5 0 0 0 0 9c2 0 4-1.5 6-4.5Zm0 0c2 3 4 4.5 6 4.5a4.5 4.5 0 0 0 0-9c-2 0-4 1.5-6 4.5Z"/></svg></div>
+        <div class="ticket"><div class="when">Sunset</div><h3>The Infinity Room</h3><p>Mirrors in every direction and a thousand of you. Finally, enough Priyal.</p></div></div>
+
+      <div class="stop"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg></div>
+        <div class="ticket"><div class="when">Before the show &middot; Jio World Plaza</div><h3>A slow wander</h3><p>Pottery Barn (I did say I wanted to go with you), a peek into Saint Laurent, and being unbearably cute in every aisle.</p>
+          <a class="link" href="https://www.jioworldplaza.com/shop/" target="_blank" rel="noopener">See the stores &rarr;</a></div></div>
+
+      <div class="stop star"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V4M12 4c-2 2-3 4-3 6M12 4c2 2 3 4 3 6M7 14c0-3-1-5-3-6M17 14c0-3 1-5 3-6"/><path d="M3 15h18l-2 5H5l-2-5Z"/></svg></div>
+        <div class="ticket"><div class="when">7:30 pm sharp</div><h3>A fountain show</h3><p>Lights, music, water dancing. Front row. My shoulder is available.</p>
+          <button class="btn mini" id="preview">Preview the fountain</button></div></div>
+
+      <div class="stop"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="8" rx="2.4" ry="3.6"/><ellipse cx="16" cy="13" rx="2.4" ry="3.6"/><path d="M7 15.5h2M15 20.5h2"/></svg></div>
+        <div class="ticket"><div class="when">After the show</div><h3>A little walk</h3><p>No destination. Slow pace. Holding hands is optional (it is not optional).</p></div></div>
+
+      <div class="stop star"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11h6v10H9z"/><path d="M12 3c1.6 2 2 3.2 2 4.3a2 2 0 0 1-4 0C10 6.2 10.4 5 12 3Z"/></svg></div>
+        <div class="ticket"><div class="when"><span class="flame"></span>Candlelight</div><h3>Dinner at Lyla</h3><p>A candlelit table for two. You order, I'll pretend I'm not staring.</p></div></div>
+
+      <div class="stop"><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M12 17c-2-1.3-3-2.4-3-3.5a1.5 1.5 0 0 1 3-.4 1.5 1.5 0 0 1 3 .4c0 1.1-1 2.2-3 3.5Z"/></svg></div>
+        <div class="ticket"><div class="when">End of the night</div><h3>Then home. Baas.</h3><p>Dropped back safe, full, and hopefully smiling.</p></div></div>
+    </div>
+    <div class="plan-foot"><button class="btn" id="toFinal">Sounds perfect</button></div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section class="screen" id="s-final" data-sky="night">
+  <div class="finale">
+    <div class="big">It's a <span>date.</span></div>
+    <div class="slip" id="slip"></div>
+    <div class="sig" id="sig">See you Saturday. &mdash; Jay</div>
+    <div class="foot" id="finalFoot"><button class="btn light" id="again">Fountain, once more</button></div>
+    <div class="fine">Made by hand, one month in, with an unreasonable number of feelings.</div>
+  </div>
+</section>
+
+<script>
+/* ============ CONFIG ============ */
+const CONFIG = {
+  herName: "Priyal",
+  yourName: "Jay",
+  pickup: "4:30 pm",          // change to your real pickup time
+  phone: "919653212225"       // WhatsApp number: country code, no plus sign
+};
+
+const S = { rating: 7, mood: null, name: null, dress: null };
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============ AUDIO: music box + effects (all synthesised) ============ */
+let actx = null, master, musicBus, muted = false, musicTimer = null;
+const N = {Bb2:116.54,C3:130.81,E3:164.81,F3:174.61,G2:98,G3:196,A3:220,Bb3:233.08,B3:246.94,C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,Bb4:466.16,C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880,C6:1046.5};
+function initAudio(){
+  if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain(); master.gain.value = 0.9;
+    const comp = actx.createDynamicsCompressor();
+    master.connect(comp).connect(actx.destination);
+    musicBus = actx.createGain(); musicBus.gain.value = 0.85;
+    const delay = actx.createDelay(); delay.delayTime.value = 0.34;
+    const fb = actx.createGain(); fb.gain.value = 0.32;
+    const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400;
+    musicBus.connect(master);
+    musicBus.connect(delay); delay.connect(lp).connect(fb).connect(delay); lp.connect(master);
+  } catch (e) { actx = null; }
+}
+function bell(t, f, v, d, bus){
+  if (!actx) return;
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  g.connect(bus || master);
+  [[1, 1], [2.01, .22], [3.98, .07]].forEach(([m, a]) => {
+    const o = actx.createOscillator(), og = actx.createGain();
+    o.type = 'sine'; o.frequency.value = f * m; og.gain.value = a;
+    o.connect(og).connect(g); o.start(t); o.stop(t + d + 0.05);
+  });
+}
+/* an original little waltz in F, 16 bars of 3/4 */
+const MEL = [
+ ['A4',1,'C5',1,'F5',1],['E5',2,'D5',1],['C5',1,'A4',1,'Bb4',1],['C5',3],
+ ['D5',1,'C5',1,'Bb4',1],['A4',2,'G4',1],['A4',1,'Bb4',1,'G4',1],['F4',3],
+ ['A4',1,'C5',1,'F5',1],['G5',2,'F5',1],['E5',1,'D5',1,'C5',1],['D5',3],
+ ['Bb4',1,'D5',1,'F5',1],['E5',2,'C5',1],['Bb4',1,'A4',1,'G4',1],['F4',2,'C6',1]
+];
+const ROOT = ['F','C','F','C','Bb','F','C','F','F','C','C','Bb','Bb','C','C','F'];
+const CH = {F:['F3','A3','C4'],C:['C3','G3','E4'],Bb:['Bb2','F3','D4']};
+const BEAT = 0.6, SEQ = [];
+MEL.forEach((bar, i) => {
+  let b = i * 3;
+  for (let k = 0; k < bar.length; k += 2) { SEQ.push({b, f:N[bar[k]], v:.11, d:1.6}); b += bar[k+1]; }
+  const c = CH[ROOT[i]];
+  SEQ.push({b:i*3, f:N[c[0]], v:.07, d:2.2});
+  SEQ.push({b:i*3+1, f:N[c[1]], v:.035, d:1});
+  SEQ.push({b:i*3+2, f:N[c[2]], v:.035, d:1});
+});
+SEQ.sort((a, b) => a.b - b.b);
+const LOOP = 48;
+let mStart = 0, ptr = 0, loopN = 0;
+function startMusic(){
+  if (!actx || musicTimer) return;
+  mStart = actx.currentTime + 0.15; ptr = 0; loopN = 0;
+  musicTimer = setInterval(() => {
+    const ahead = actx.currentTime + 0.4;
+    for (;;) {
+      const e = SEQ[ptr], t = mStart + (loopN * LOOP + e.b) * BEAT;
+      if (t > ahead) break;
+      if (t > actx.currentTime - 0.05) bell(t, e.f, e.v, e.d, musicBus);
+      if (++ptr >= SEQ.length) { ptr = 0; loopN++; }
+    }
+  }, 100);
+}
+function blip(f = 660, d = .12, v = .07){ if (actx && !muted) bell(actx.currentTime, f, v, d); }
+function chime(){ if (!actx || muted) return; const t = actx.currentTime; [N.C5,N.E5,N.G5,N.C6].forEach((f,i)=>bell(t+i*.09, f, .09, 1.2)); }
+function sadTrombone(){ if (!actx || muted) return; const t = actx.currentTime; [N.G4,N.F4,N.E4,N.D4].forEach((f,i)=>bell(t+i*.16, f, .07, .5)); }
+function whoosh(dur = 2.5){
+  if (!actx || muted) return;
+  const len = actx.sampleRate * dur, buf = actx.createBuffer(1, len, actx.sampleRate), ch = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+  const src = actx.createBufferSource(); src.buffer = buf;
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = .6;
+  const g = actx.createGain(), t = actx.currentTime;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .3); g.gain.linearRampToValueAtTime(.035, t + dur - .6); g.gain.linearRampToValueAtTime(0, t + dur);
+  src.connect(bp).connect(g).connect(master); src.start(t);
+}
+const muteBtn = document.getElementById('mute'), muteTxt = document.getElementById('muteTxt');
+muteBtn.addEventListener('click', () => {
+  muted = !muted;
+  if (master) master.gain.setTargetAtTime(muted ? 0 : .9, actx.currentTime, .08);
+  muteBtn.classList.toggle('off', muted);
+  muteTxt.textContent = muted ? 'music off' : 'music on';
+});
+document.addEventListener('visibilitychange', () => {
+  if (!actx) return;
+  document.hidden ? actx.suspend() : actx.resume();
+});
+
+/* ============ SKY: stars + petals ============ */
+(function(){
+  const st = document.getElementById('stars');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('i'); s.className = 'twinkle';
+    s.style.left = Math.random()*100 + '%'; s.style.top = Math.random()*70 + '%';
+    const z = Math.random() < .15 ? 3 : 2; s.style.width = s.style.height = z + 'px';
+    s.style.animationDelay = (-Math.random()*3) + 's'; s.style.animationDuration = (2 + Math.random()*3) + 's';
+    st.appendChild(s);
+  }
+  if (REDUCED) return;
+  const sky = document.getElementById('sky'), tints = ['#F59AB8','#FFD1DC','#E6BE76','#FFFFFF','#E0558A'];
+  for (let i = 0; i < 16; i++) {
+    const p = document.createElement('div'); p.className = 'petal';
+    const s = 8 + Math.random()*14;
+    p.style.left = Math.random()*100 + '%'; p.style.width = s + 'px'; p.style.height = s + 'px';
+    p.style.animationDuration = (14 + Math.random()*14) + 's'; p.style.animationDelay = (-Math.random()*25) + 's';
+    p.innerHTML = '<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M10 18C4 14 2 10 2 7a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 3-2 7-8 11Z" fill="' + tints[i % tints.length] + '"/></svg>';
+    sky.appendChild(p);
+  }
+})();
+
+/* ============ FX canvas: hearts + fountain water ============ */
+const fx = document.getElementById('fx'), ctx = fx.getContext('2d');
+let parts = [], running = false;
+function sizeCanvas(){
+  const r = Math.min(devicePixelRatio || 1, 2);
+  fx.width = innerWidth * r; fx.height = innerHeight * r;
+  fx.style.width = innerWidth + 'px'; fx.style.height = innerHeight + 'px';
+  ctx.setTransform(r, 0, 0, r, 0, 0);
+}
+sizeCanvas(); addEventListener('resize', sizeCanvas);
+const COLORS = ['#E0558A','#AE2A5D','#E6BE76','#FFD1DC','#F59AB8','#FFFFFF'];
+function heartPath(c, s){
+  c.beginPath(); c.moveTo(0, -.25*s);
+  c.bezierCurveTo(0, -.6*s, -.55*s, -.6*s, -.55*s, -.15*s);
+  c.bezierCurveTo(-.55*s, .28*s, 0, .55*s, 0, .85*s);
+  c.bezierCurveTo(0, .55*s, .55*s, .28*s, .55*s, -.15*s);
+  c.bezierCurveTo(.55*s, -.6*s, 0, -.6*s, 0, -.25*s);
+  c.closePath(); c.fill();
+}
+function burst(n, o = {}){
+  if (REDUCED) n = Math.min(n, 10);
+  for (let i = 0; i < n; i++) parts.push({
+    k: 'h', x: o.x ?? Math.random()*innerWidth, y: o.y ?? (o.top ? -30 : innerHeight*.5),
+    vx: (Math.random()-.5)*(o.spread || 10), vy: o.top ? 1 + Math.random()*2.5 : -(4 + Math.random()*10),
+    g: o.top ? .05 : .22, rot: Math.random()*6.28, vr: (Math.random()-.5)*.2, s: 8 + Math.random()*14,
+    c: COLORS[(Math.random()*COLORS.length)|0], a: 1, da: o.top ? .004 : .011, heart: Math.random() > .3
+  });
+  run();
+}
+function rain(sec){ const end = Date.now() + sec*1000; (function t(){ burst(5, {top:true, spread:3}); if (Date.now() < end) setTimeout(t, 220); })(); }
+const LIGHTS = [['#9BD7FF','#FFFFFF'],['#FFB3CB','#E0558A'],['#FFE3A3','#E6BE76'],['#C9B6FF','#8F7CFF'],['#A8FFE0','#FFFFFF']];
+let fountainOn = 0;
+function fountain(sec = 6){
+  whoosh(sec);
+  const end = Date.now() + sec*1000, start = Date.now();
+  fountainOn++;
+  (function tick(){
+    const W = innerWidth, H = innerHeight, el = (Date.now() - start) / 1000;
+    const light = LIGHTS[Math.floor(el / 1.2) % LIGHTS.length];
+    const jets = W < 500 ? 5 : 7;
+    for (let j = 0; j < jets; j++) {
+      const x = W * (j + .5) / jets;
+      const centre = 1 - Math.abs(j - (jets-1)/2) / jets;
+      const wave = .55 + .45 * Math.sin(el * 2.4 + j * .9);
+      const h = H * (.25 + .45 * centre * wave);
+      const n = REDUCED ? 1 : 4;
+      for (let k = 0; k < n; k++) {
+        const g = .2, v = Math.sqrt(2 * g * h) * (.92 + Math.random()*.12);
+        parts.push({ k:'w', x: x + (Math.random()-.5)*6, y: H + 4, vx: (Math.random()-.5)*1.1 + Math.sin(el*1.3 + j)*.5, vy: -v, g,
+          s: 1.4 + Math.random()*2.2, c: Math.random() < .3 ? light[1] : light[0], a: .95, da: .006 });
+      }
+    }
+    run();
+    if (Date.now() < end) setTimeout(tick, 34); else fountainOn--;
+  })();
+}
+function run(){ if (!running) { running = true; requestAnimationFrame(loop); } }
+function loop(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.a > .02 && p.y < innerHeight + 60);
+  for (const p of parts) {
+    p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= p.da;
+    if (p.k === 'w') {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.max(p.a, 0) * .9; ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 6.283); ctx.fill();
+      ctx.globalAlpha = Math.max(p.a, 0) * .18;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.s * 3.2, 0, 6.283); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    } else {
+      p.vx *= .992; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(p.a, 0); ctx.fillStyle = p.c;
+      if (p.heart) heartPath(ctx, p.s); else { ctx.beginPath(); ctx.ellipse(0, 0, p.s*.3, p.s*.5, 0, 0, 6.283); ctx.fill(); }
+      ctx.restore();
+    }
+  }
+  ctx.globalAlpha = 1;
+  if (parts.length) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+}
+
+/* ============ ROUTER ============ */
+function go(id){
+  const cur = document.querySelector('.screen.active');
+  if (cur) cur.classList.remove('active');
+  const n = document.getElementById(id);
+  document.body.dataset.sky = n.dataset.sky;
+  setTimeout(() => { n.classList.add('active'); n.scrollTop = 0; if (n.dataset.enter) window[n.dataset.enter](); }, 220);
+}
+document.body.dataset.sky = 'day';
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { blip(784, .3); go(b.dataset.go); }));
+document.querySelectorAll('.prog').forEach(p => {
+  const step = +p.dataset.step;
+  p.innerHTML = '<div class="dots">' + [1,2,3,4,5].map(i => '<i class="' + (i <= step ? 'on' : '') + '"></i>').join('') + '</div><span>' + (step < 5 ? 'question ' + step + ' of 5' : 'the important one') + '</span>';
+});
+function say(el, msg){ el.textContent = msg; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
+function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+
+/* ============ COVER ============ */
+const env = document.getElementById('env');
+function openEnv(){
+  if (env.classList.contains('open')) return;
+  initAudio(); startMusic();
+  muteBtn.classList.add('show');
+  env.classList.add('open'); chime();
+  const r = env.getBoundingClientRect();
+  burst(30, { x: r.left + r.width/2, y: r.top + r.height/2, spread: 12 });
+  setTimeout(() => go('s-intro'), 950);
+}
+env.addEventListener('click', openEnv);
+env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnv(); } });
+
+/* ============ Q1: the slider with standards ============ */
+const rating = document.getElementById('rating'), dialNum = document.getElementById('dialNum'), ratingNag = document.getElementById('ratingNag'), rangewrap = document.getElementById('rangewrap');
+const LOW = ['this slider does not go below 7. it has feelings.','nice try. it bounced back.','numbers under 7 were removed for your own safety.','7 is the floor. I checked with the engineer. it is me.'];
+let lowI = 0;
+rating.addEventListener('input', () => {
+  let v = +rating.value;
+  if (v < 7) { rating.value = 7; v = 7; say(ratingNag, LOW[lowI++ % LOW.length]); shake(rangewrap); sadTrombone(); }
+  else if (v === 11) { say(ratingNag, 'eleven out of ten. screenshotting this.'); const r = rangewrap.getBoundingClientRect(); burst(18, { x: r.left + r.width*.9, y: r.top, spread: 8 }); chime(); }
+  else if (v === 10) { say(ratingNag, 'ten. okay, now I can\'t sleep either.'); blip(880); }
+  else { ratingNag.classList.remove('show'); blip(N.C5 * Math.pow(2, (v-7)/7), .2, .06); }
+  S.rating = v; dialNum.textContent = v;
+  dialNum.classList.add('pop'); setTimeout(() => dialNum.classList.remove('pop'), 280);
+});
+
+/* ============ Q2: coffee or sweets ============ */
+const moodReply = document.getElementById('moodReply');
+document.querySelectorAll('#mood .opt').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.m === 'tea') { shake(b); b.classList.add('nope'); say(moodReply, b.dataset.r); sadTrombone(); return; }
+  document.querySelectorAll('#mood .opt').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); S.mood = b.dataset.m; say(moodReply, b.dataset.r); blip(988, .4);
+  const r = b.getBoundingClientRect(); burst(8, { x: r.left + r.width/2, y: r.top + r.height/2, spread: 6 });
+}));
+document.getElementById('q2next').addEventListener('click', () => {
+  if (!S.mood) { say(moodReply, 'pick one. I need to know where to take you.'); shake(document.getElementById('mood')); return; }
+  blip(784, .3); go('s-q3');
+});
+
+/* ============ Q3: names (bhai is banned) ============ */
+const nameReply = document.getElementById('nameReply');
+document.querySelectorAll('#names .chip').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.n === 'Bhai') { say(nameReply, b.dataset.r); shake(b); sadTrombone(); setTimeout(() => b.classList.add('banned'), 450); return; }
+  document.querySelectorAll('#names .chip').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); S.name = b.dataset.n; say(nameReply, b.dataset.r); blip(1046, .35);
+}));
+document.getElementById('q3next').addEventListener('click', () => {
+  if (!S.name) { say(nameReply, 'choose wisely. (not bhai.)'); return; }
+  blip(784, .3); go('s-q4');
+});
+
+/* ============ Q4: dress code ============ */
+const dressReply = document.getElementById('dressReply');
+document.querySelectorAll('#dress .opt').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#dress .opt').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); S.dress = b.dataset.d; say(dressReply, b.dataset.r); blip(880, .35);
+  if (S.dress.startsWith('Pink')) { const r = b.getBoundingClientRect(); burst(14, { x: r.left + 30, y: r.top + r.height/2, spread: 8 }); chime(); }
+}));
+document.getElementById('q4next').addEventListener('click', () => {
+  if (!S.dress) { say(dressReply, 'even "surprise me" counts. pick one.'); return; }
+  blip(784, .3); go('s-q5');
+});
+
+/* ============ Q5: the No button that will not be caught ============ */
+const yesBtn = document.getElementById('yes'), noBtn = document.getElementById('no'), whisper = document.getElementById('whisper'), countEl = document.getElementById('count');
+const NO_TXT = ['No','No? 🥺','Are you sure?','Really really?','Think of the macarons','Pakka?','Button is broken','It\'s rigged, sorry'];
+const YES_TXT = ['Yes','Yes 💕','Yes!! 💖','YES 💗','Obviously yes','YES, Saturday!','A thousand yeses'];
+const WHISPERS = ['the no button flinched 👀','it is not very committed to its position','yes is getting suspiciously confident','no is running out of places to hide','the no button has requested a lawyer','nobody has ever caught it. nobody.','okay, it\'s genuinely tired now'];
+const MAX = 7;
+let dodges = 0, yesScale = 1, cooling = false, noDone = false;
+function overlaps(x, y, w, h, r, pad){ return !(x + w < r.left - pad || x > r.right + pad || y + h < r.top - pad || y > r.bottom + pad); }
+function dodge(){
+  if (noDone || cooling) return;
+  cooling = true; setTimeout(() => cooling = false, 420);
+  const r = noBtn.getBoundingClientRect();
+  burst(5, { x: r.left + r.width/2, y: r.top + r.height/2, spread: 5 });
+  if (!noBtn.classList.contains('loose')) {
+    noBtn.style.width = r.width + 'px'; noBtn.style.height = r.height + 'px';
+    noBtn.style.left = r.left + 'px'; noBtn.style.top = r.top + 'px';
+    document.body.appendChild(noBtn); noBtn.classList.add('loose'); void noBtn.offsetWidth;
+  }
+  const W = innerWidth, H = innerHeight, w = r.width, h = r.height, m = 18, yr = yesBtn.getBoundingClientRect();
+  let x, y, t = 0;
+  do { x = m + Math.random()*(W - w - 2*m); y = 70 + Math.random()*(H - h - 70 - m - 30); t++; }
+  while (t < 60 && (overlaps(x, y, w, h, yr, 30) || Math.hypot(x - r.left, y - r.top) < Math.min(160, W*.35)));
+  noBtn.style.left = x + 'px'; noBtn.style.top = y + 'px';
+  noBtn.style.transform = 'rotate(' + (Math.random()*24 - 12).toFixed(1) + 'deg) scale(' + Math.max(.65, 1 - dodges*.05).toFixed(2) + ')';
+  dodges++;
+  blip(300 + dodges*40, .15, .05);
+  yesScale = Math.min(yesScale * 1.12, 1.8);
+  yesBtn.style.transform = 'scale(' + yesScale.toFixed(3) + ')';
+  yesBtn.textContent = YES_TXT[Math.min(dodges, YES_TXT.length - 1)];
+  if (dodges >= 3) yesBtn.classList.add('glow');
+  noBtn.textContent = NO_TXT[Math.min(dodges, NO_TXT.length - 1)];
+  whisper.textContent = WHISPERS[Math.min(dodges - 1, WHISPERS.length - 1)]; whisper.classList.add('show');
+  countEl.textContent = 'escape attempts: ' + dodges + ' of ' + MAX; countEl.classList.add('show');
+  if (dodges >= MAX) setTimeout(surrender, 650);
+}
+function surrender(){
+  noDone = true;
+  noBtn.style.transform = 'rotate(-3deg) scale(.95)';
+  noBtn.style.background = 'linear-gradient(160deg,#FFC9D8,#E0558A)'; noBtn.style.color = '#fff'; noBtn.style.borderColor = 'transparent';
+  noBtn.textContent = 'okay fine, yes 🥺';
+  whisper.textContent = 'it gave up. both buttons say yes now 💕';
+  countEl.textContent = 'the no button has retired';
+  chime();
+}
+noBtn.addEventListener('mouseenter', dodge);
+noBtn.addEventListener('pointerdown', e => { if (!noDone) { e.preventDefault(); dodge(); } });
+noBtn.addEventListener('click', e => { if (noDone) accept(); else { e.preventDefault(); dodge(); } });
+addEventListener('mousemove', e => {
+  if (noDone || cooling || !document.getElementById('s-q5').classList.contains('active')) return;
+  const r = noBtn.getBoundingClientRect();
+  if (Math.hypot(e.clientX - (r.left + r.width/2), e.clientY - (r.top + r.height/2)) < 75) dodge();
+});
+yesBtn.addEventListener('click', accept);
+
+/* ============ ACCEPT → LOADER ============ */
+const STATUS = [
+  'Checking EL&N has enough cold coffee…',
+  'Asking Ladurée to hide the prettiest macarons…',
+  'Polishing every mirror in the Infinity Room…',
+  'Telling the fountain: 7:30 sharp, no excuses…',
+  'Lighting candles at Lyla…',
+  'Removing the word "bhai" from the evening…',
+  'Practising acting normal…'
+];
+function accept(){
+  noBtn.hidden = true;
+  const r = yesBtn.getBoundingClientRect();
+  burst(70, { x: r.left + r.width/2, y: r.top + r.height/2, spread: 15 });
+  chime();
+  go('s-load');
+  setTimeout(runLoader, 500);
+}
+function runLoader(){
+  const bar = document.getElementById('barfill'), pct = document.getElementById('pct'), st = document.getElementById('status');
+  let p = 0, i = 0; st.textContent = STATUS[0];
+  const swap = setInterval(() => { i = (i + 1) % STATUS.length; st.textContent = STATUS[i]; blip(N.G5, .25, .03); }, 1000);
+  const tick = setInterval(() => {
+    p += 2 + Math.random()*4.5;
+    if (p >= 99) {
+      clearInterval(tick); clearInterval(swap);
+      bar.style.width = '99%'; pct.textContent = '99%'; st.textContent = 'Hold on. This next part is important.';
+      setTimeout(() => { bar.style.width = '100%'; pct.textContent = '100%'; st.textContent = 'Ready.'; chime(); setTimeout(() => go('s-plan'), 900); }, 1500);
+      return;
+    }
+    bar.style.width = p + '%'; pct.textContent = Math.floor(p) + '%';
+  }, 150);
+}
+
+/* ============ THE PLAN ============ */
+const CAFE = {
+  coffee: ['EL&N London', 'Cold coffee, as per your religion. Pretty cups, prettier company.'],
+  sweets: ['Ladurée', 'Macarons in every pastel colour. Your sweet tooth deserves this.'],
+  both:   ['EL&N, then Ladurée', 'Cold coffee first, macarons after. Because you said both, and I listen.']
+};
+document.getElementById('s-plan').dataset.enter = 'enterPlan';
+window.enterPlan = function(){
+  const c = CAFE[S.mood] || CAFE.both;
+  document.getElementById('cafeTitle').textContent = c[0];
+  document.getElementById('cafeText').textContent = c[1];
+  document.getElementById('pickWhen').textContent = CONFIG.pickup + ' · pickup';
+  const stops = document.querySelectorAll('#tl .stop');
+  stops.forEach((s, i) => setTimeout(() => { s.classList.add('in'); blip([N.F4,N.A4,N.C5,N.D5,N.F5,N.A5,N.C6,N.F5][i], .5, .05); }, 300 + i * 420));
+};
+document.getElementById('preview').addEventListener('click', () => fountain(6));
+
+/* ============ FINALE ============ */
+function listRow(k, v){ return '<div><b>' + k + '</b><span>' + v + '</span></div>'; }
+document.getElementById('toFinal').addEventListener('click', () => {
+  const c = CAFE[S.mood] || CAFE.both;
+  document.getElementById('slip').innerHTML =
+    listRow('When', 'Sat, 31 Oct · ' + CONFIG.pickup) +
+    listRow('Excitement', S.rating === 11 ? '11 / 10 (off the chart)' : S.rating + ' / 10') +
+    listRow('First stop', c[0]) +
+    listRow('Called', (S.name || 'Cutie') + (S.name === 'Buddy' ? ' (ironically)' : '')) +
+    listRow('Wearing', S.dress || 'A surprise') +
+    listRow('No button', dodges ? 'ran away ' + dodges + ' times' : 'never touched');
+  document.getElementById('sig').textContent = 'See you Saturday, ' + (S.name && S.name !== 'Priyal' ? S.name.toLowerCase() : CONFIG.herName) + '. — ' + CONFIG.yourName;
+  if (CONFIG.phone && !document.getElementById('wa')) {
+    const nm = S.name === 'Bhai' || !S.name ? 'Cutie' : S.name;
+    const dressLine = (S.dress || '').startsWith('Pink') ? 'PINK 🩷🎀 (yes, for you. don\'t get used to it 😌)' : S.dress === 'Anything but pink' ? 'anything but pink 🖤😌 (sorry not sorry)' : 'a surprise 🎁👀 (good luck staying calm)';
+    const excite = S.rating === 11 ? '11/10 🤯🔥 (the slider literally broke)' : S.rating + '/10 ' + ['','','','','','','','🥰','😍','💘','🤯'][S.rating];
+    const msg =
+      '💌✨ OKAY FINE. YES. YES YES YES. ✨💌\n\n' +
+      'Hiii Jay 🙈🫶🏻\n' +
+      'I opened your little envelope, survived the questions, and here are my OFFICIAL answers 📝👇🏻\n\n' +
+      '💓 How excited am I: ' + excite + '\n' +
+      (S.mood === 'coffee' ? '☕️🧊 Mood: cold coffee at EL&N, obviously (still never had chai 😤)\n' : S.mood === 'sweets' ? '🍬🧁 Mood: Ladurée macarons, my sweet tooth said hi 🫣\n' : '☕️🍬 Mood: BOTH. coffee AND macarons. I want it all 💅🏻\n') +
+      '🏷️ You may call me: ' + nm + ' 🥺 (and NOT bhai, I saw what you did 😭😂)\n' +
+      '👗 Wearing: ' + dressLine + '\n' +
+      '🪞 Infinity room: ready for a thousand of us 💫\n' +
+      '⛲️ Fountain at 7:30: front row, your shoulder is booked 😚\n' +
+      '🕯️ Lyla: candlelit dinner, I\'m ordering dessert, don\'t argue 🍫\n\n' +
+      '🏃🏻‍♂️💨 Also, your NO button ran away from me ' + dodges + ' time' + (dodges === 1 ? '' : 's') + '. Totally rigged website. Very cute though. 🙄💕\n\n' +
+      'See you Saturday, 31st 🗓️🌙\n' +
+      'Pick me up on time okay? ⏰🚗💨\n' +
+      '— ' + CONFIG.herName + ' 🌸🫶🏻💖';
+    const a = document.createElement('a');
+    a.id = 'wa'; a.className = 'btn'; a.target = '_blank'; a.rel = 'noopener';
+    a.href = 'https://wa.me/' + CONFIG.phone + '?text=' + encodeURIComponent(msg);
+    a.textContent = '💌 Tell ' + CONFIG.yourName + ' I said yes 🫶🏻';
+    document.getElementById('finalFoot').prepend(a);
+  }
+  go('s-final');
+  chime();
+  setTimeout(() => { fountain(5); burst(80, { spread: 16 }); rain(4); }, 450);
+});
+document.getElementById('again').addEventListener('click', () => { fountain(6); rain(3); chime(); });
+</script>
+
+</body></html>
